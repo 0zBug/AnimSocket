@@ -23,7 +23,7 @@ function AnimSocket.Connect(Channel, Secret)
             Payload = Secret and Invisible.Encode(Payload) or Payload
             
 			local Animation = Instance.new("Animation")
-			Animation.AnimationId = "rbxassetid://" .. os.clock() .. "\255" .. Payload
+			Animation.AnimationId = "rbxassetid://" .. math.floor(os.clock()) .. "\255" .. Payload
 			
 			local AnimationTrack = Humanoid:LoadAnimation(Animation)
 			AnimationTrack:Play()
@@ -56,13 +56,15 @@ function AnimSocket.Connect(Channel, Secret)
                 local Data = string.sub(Message, 40, -1)
                 
                 if Secret then
+                    Data = string.gsub(Data, "%d+\255", "")
+
                     Data = Invisible.Decode(Data)
                 end
 
                 Data = string.split(Data, "\255")
 
                 local Source, Error = pcall(function()
-                    Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
+                    Socket.OnMessage:Fire(Players:FindFirstChild(Data[2]), Data[3])
                 end)
 
                 if not Source then
