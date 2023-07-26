@@ -1,4 +1,3 @@
-
 local Players = game:GetService("Players")
 local LogService = game:GetService("LogService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -51,7 +50,7 @@ function AnimSocket.Connect(Channel)
 			
 			local Data = string.split(string.sub(Message, 40, -1), "\255")
 			
-			Socket.OnMessage:Fire(Players[Data[3]], Data[4])
+			Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
 		end
 	end)
 	
