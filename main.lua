@@ -23,7 +23,7 @@ function AnimSocket.Connect(Channel, Secret)
             Payload = Secret and Invisible.Encode(Payload) or Payload
             
 			local Animation = Instance.new("Animation")
-			Animation.AnimationId = "rbxassetid://" .. math.floor(os.clock()) .. "\255" .. Payload
+			Animation.AnimationId = "rbxassetid://" .. math.floor(os.clock() * 100) .. "\255" .. Payload
 			
 			local AnimationTrack = Humanoid:LoadAnimation(Animation)
 			AnimationTrack:Play()
