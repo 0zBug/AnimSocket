@@ -1,6 +1,5 @@
 local Players = game:GetService("Players")
 local LogService = game:GetService("LogService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 repeat wait() until Players.LocalPlayer
 
@@ -46,13 +45,19 @@ function AnimSocket.Connect(Channel)
 
 	LogService.MessageOut:Connect(function(Message, Type)
 		if Type == Enum.MessageType.MessageError then
-			task.wait()
-			
-			local Data = string.split(string.sub(Message, 40, -1), "\255")
+      if string.sub(Message, 1, 39) == "Failed to load animation: rbxassetid://" then
+        task.wait()
 
-			pcall(function()
-				Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
-			end)
+        local Data = string.split(string.sub(Message, 40, -1), "\255")
+
+        local Source, Error = pcall(function()
+          Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
+        end)
+
+        if not Source then
+          warn(Error)
+        end
+      end
 		end
 	end)
 	
