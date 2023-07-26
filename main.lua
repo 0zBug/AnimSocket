@@ -12,13 +12,18 @@ LocalPlayer.CharacterAdded:Connect(function(Character)
 	Humanoid = Character:WaitForChild("Humanoid")
 end)
 
+local Invisible = loadstring(game:HttpGet("https://raw.github.com/0zBug/Invisible/main/main.lua"))()
+
 local AnimSocket = {}
 
-function AnimSocket.Connect(Channel)
+function AnimSocket.Connect(Channel, Secret)
     local Socket = {
         Send = function(self, Message) 
+            local Payload = string.format("rbxassetid://%s\255%s\255%s\255%s", os.clock(), Channel, LocalPlayer.Name, Message)
+            Payload = Secret and Invisible.Encode(Payload) or Payload
+            
 			local Animation = Instance.new("Animation")
-			Animation.AnimationId = string.format("rbxassetid://%s\255%s\255%s\255%s", os.clock(), Channel, LocalPlayer.Name, Message)
+			Animation.AnimationId = Payload
 			
 			local AnimationTrack = Humanoid:LoadAnimation(Animation)
 			AnimationTrack:Play()
@@ -44,21 +49,27 @@ function AnimSocket.Connect(Channel)
     setreadonly(Socket, true)
 
 	LogService.MessageOut:Connect(function(Message, Type)
-		if Type == Enum.MessageType.MessageError then
-      if string.sub(Message, 1, 39) == "Failed to load animation: rbxassetid://" then
-        task.wait()
+        if Type == Enum.MessageType.MessageError then
+            if string.sub(Message, 1, 39) == "Failed to load animation: rbxassetid://" then
+                task.wait()
 
-        local Data = string.split(string.sub(Message, 40, -1), "\255")
+                local Data = string.sub(Message, 40, -1)
+                
+                if Secret then
+                    Data = Invisible.Decode(Data)
+                end
 
-        local Source, Error = pcall(function()
-          Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
-        end)
+                Data = string.split(Data, "\255")
 
-        if not Source then
-          warn(Error)
+                local Source, Error = pcall(function()
+                    Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
+                end)
+
+                if not Source then
+                    warn(Error)
+                end
+            end
         end
-      end
-		end
 	end)
 	
     return Socket
