@@ -19,11 +19,11 @@ local AnimSocket = {}
 function AnimSocket.Connect(Channel, Secret)
     local Socket = {
         Send = function(self, Message) 
-            local Payload = string.format("rbxassetid://%s\255%s\255%s\255%s", os.clock(), Channel, LocalPlayer.Name, Message)
+            local Payload = string.format("%s\255%s\255%s", Channel, LocalPlayer.Name, Message)
             Payload = Secret and Invisible.Encode(Payload) or Payload
             
 			local Animation = Instance.new("Animation")
-			Animation.AnimationId = Payload
+			Animation.AnimationId = "rbxassetid://" .. os.clock() .. "\255" .. Payload
 			
 			local AnimationTrack = Humanoid:LoadAnimation(Animation)
 			AnimationTrack:Play()
