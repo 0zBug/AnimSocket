@@ -49,8 +49,10 @@ function AnimSocket.Connect(Channel)
 			task.wait()
 			
 			local Data = string.split(string.sub(Message, 40, -1), "\255")
-			
-			Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
+
+			pcall(function()
+				Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
+			end)
 		end
 	end)
 	
