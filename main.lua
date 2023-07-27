@@ -54,10 +54,9 @@ function AnimSocket.Connect(Channel, Secret)
                 task.wait()
 
                 local Data = string.sub(Message, 40, -1)
-                
+                Data = string.gsub(Data, "%d+\255", "")
+					
                 if Secret then
-                    Data = string.gsub(Data, "%d+\255", "")
-
                     Data = Invisible.Decode(Data)
                 end
 
