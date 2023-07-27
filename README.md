@@ -19,7 +19,7 @@
 ### OnMessage
 **Fired when a message is sent in the connected channel**
 ```html
-<void> Channel.OnMessage:Connect(function(<string> Message))
+<void> Channel.OnMessage:Connect(function(<Instance> Player, <string> Message))
 ```
 ### OnClose
 **Fired when the Close function is called**
