@@ -18,7 +18,7 @@ local function Encode(String)
 	local MessageId = {}
 
 	for n = 0, 1 do
-		table.insert(MessageId, string.format("%03d", math.random(100, 255)))
+		table.insert(MessageId, string.format("%03d", math.random(100, 999)))
 	end
 
 	MessageId = table.concat(MessageId)
