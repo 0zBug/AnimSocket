@@ -19,12 +19,12 @@ function AnimSocket.Connect(Channel)
         Send = function(self, Message) 
             local Payload = string.format("%s\255%s\255%s", Channel, LocalPlayer.Name, Message)
 
-			local Animation = Instance.new("Animation")
-			Animation.AnimationId = "rbxassetid://" .. math.floor(os.clock() * 10000) .. "\255" .. Payload
+            local Animation = Instance.new("Animation")
+            Animation.AnimationId = "rbxassetid://" .. math.floor(os.clock() * 10000) .. "\255" .. Payload
 			
-			local AnimationTrack = Humanoid:LoadAnimation(Animation)
-			AnimationTrack:Play()
-			AnimationTrack:Stop()
+            local AnimationTrack = Humanoid:LoadAnimation(Animation)
+            AnimationTrack:Play()
+            AnimationTrack:Stop()
         end,
         Close = function(self)
             self.OnClose()
