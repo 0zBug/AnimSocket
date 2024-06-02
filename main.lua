@@ -1,5 +1,5 @@
 local Players = game:GetService("Players")
-local LogService = game:GetService("LogService")
+local RunService = game:GetService("RunService")
 
 repeat wait() until Players.LocalPlayer
 
@@ -12,16 +12,13 @@ LocalPlayer.CharacterAdded:Connect(function(Character)
 	Humanoid = Character:WaitForChild("Humanoid")
 end)
 
-local Invisible = loadstring(game:HttpGet("https://raw.github.com/0zBug/Invisible/main/main.lua"))()
-
 local AnimSocket = {}
 
-function AnimSocket.Connect(Channel, Secret)
+function AnimSocket.Connect(Channel)
     local Socket = {
         Send = function(self, Message) 
             local Payload = string.format("%s\255%s\255%s", Channel, LocalPlayer.Name, Message)
-            Payload = Secret and Invisible.Encode(Payload) or Payload
-            
+
 			local Animation = Instance.new("Animation")
 			Animation.AnimationId = "rbxassetid://" .. math.floor(os.clock() * 10000) .. "\255" .. Payload
 			
@@ -38,7 +35,7 @@ function AnimSocket.Connect(Channel, Secret)
                 table.insert(self.Connections, f)
             end,
             Fire = function(self, ...)
-                for _,f in pairs(self.Connections) do
+                for _, f in pairs(self.Connections) do
                     f(...)
                 end
             end
@@ -46,33 +43,36 @@ function AnimSocket.Connect(Channel, Secret)
         OnClose = function() end
     }
 
-    setreadonly(Socket, true)
+    local Complete = {}
 
-	LogService.MessageOut:Connect(function(Message, Type)
-        if Type == Enum.MessageType.MessageError then
-            if string.sub(Message, 1, 39) == "Failed to load animation: rbxassetid://" then
-                task.wait()
+    RunService.RenderStepped:Connect(function()
+        for _, Player in pairs(Players:GetPlayers()) do
+            pcall(function()
+                local Character = Player.Character
+                local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
 
-                local Data = string.sub(Message, 40, -1)
-                Data = string.gsub(Data, "%d+\255", "")
-					
-                if Secret then
-                    Data = Invisible.Decode(Data)
+                for _, Animation in pairs(Humanoid:GetPlayingAnimationTracks()) do
+                    local Data = string.sub(Animation.Animation.AnimationId, 14, -1)
+                    Data = string.split(Data, "\255")
+
+                    if not Complete[Data[1]] then
+                        if Data[2] == Channel then
+                            local Source, Error = pcall(function()
+                                Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
+                            end)
+
+                            if not Source then
+                                warn(Error)
+                            end
+                        end
+
+                        Complete[Data[1]] = true
+                    end
                 end
-
-                Data = string.split(Data, "\255")
-
-                local Source, Error = pcall(function()
-                    Socket.OnMessage:Fire(Players:FindFirstChild(Data[2]), Data[3])
-                end)
-
-                if not Source then
-                    warn(Error)
-                end
-            end
+            end)
         end
-	end)
-	
+    end)
+
     return Socket
 end
 
