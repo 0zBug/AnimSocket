@@ -18,13 +18,13 @@ function AnimSocket.Connect(Channel)
     local Socket = {
         Send = function(self, Message) 
             local Payload = string.format("%s\255%s\255%s", Channel, LocalPlayer.Name, Message)
-	
-            local Animation = Instance.new("Animation")
-            Animation.AnimationId = "rbxassetid://" .. math.floor(os.clock() * 10000) .. "\255" .. Payload
-		
-            local AnimationTrack = Humanoid:LoadAnimation(Animation)
-            AnimationTrack:Play()
-            AnimationTrack:Stop()
+
+			local Animation = Instance.new("Animation")
+			Animation.AnimationId = "rbxassetid://" .. math.floor(os.clock() * 10000) .. "\255" .. Payload
+			
+			local AnimationTrack = Humanoid:LoadAnimation(Animation)
+			AnimationTrack:Play()
+			AnimationTrack:Stop()
         end,
         Close = function(self)
             self.OnClose()
@@ -56,17 +56,23 @@ function AnimSocket.Connect(Channel)
                     Data = string.split(Data, "\255")
 
                     if not Complete[Data[1]] then
+                        Complete[Data[1]] = true
+
                         if Data[2] == Channel then
                             local Source, Error = pcall(function()
-                                Socket.OnMessage:Fire(Players:FindFirstChild(Data[3]), Data[4])
+                                local Player = Data[3]
+
+                                for i = 1, 3 do
+                                    table.remove(Data, 1)
+                                end
+
+                                Socket.OnMessage:Fire(Players:FindFirstChild(Player), table.concat(Data, "\255"))
                             end)
 
                             if not Source then
                                 warn(Error)
                             end
                         end
-
-                        Complete[Data[1]] = true
                     end
                 end
             end)
