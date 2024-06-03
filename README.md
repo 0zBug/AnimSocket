@@ -30,7 +30,7 @@
 ```lua
 local AnimSocket =  loadstring(game:HttpGet("https://raw.github.com/0zBug/AnimSocket/main/main.lua"))()
 
-local Channel = AnimSocket.Connect("Packet")
+local Channel = AnimSocket.Connect("ChannelName")
 
 Channel.OnMessage:Connect(function(Player, Message)
 	print(Player, Message) --> 4DBug, "Hello, World!"
