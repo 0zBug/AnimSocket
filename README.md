@@ -30,17 +30,10 @@
 ```lua
 local AnimSocket =  loadstring(game:HttpGet("https://raw.github.com/0zBug/AnimSocket/main/main.lua"))()
 
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local LocalPlayer = Players.LocalPlayer
-
-local Channel = AnimSocket.Connect("ChannelName", true)
+local Channel = AnimSocket.Connect("Packet")
 
 Channel.OnMessage:Connect(function(Player, Message)
-    if Player ~= LocalPlayer then
-        ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(Message, "All")
-    end
+	print(Player, Message) --> 4DBug, "Hello, World!"
 end)
 
 Channel:Send("Hello, World!")
