@@ -4,7 +4,7 @@
 ### Connect
 **Connects to the channel specified**
 ```html
-<Object> AnimSocket:Connect(<string> Channel, <boolean> Secret)
+<Object> AnimSocket:Connect(<string> Channel)
 ```
 ### Send
 **Sends the message to all connected clients**
